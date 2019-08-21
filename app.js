@@ -21,26 +21,29 @@ app.all("*", function(req, res, next) {
     next();
 });
 
-app.use(function(req, res, next) {
-    if (req.url != '/user/login' && req.url != "/user/register") {
-        let body = req.body.token || req.query.token || req.headers.token;
-        jwt.verify(token, secret, function(err, decode) {
-            if (err) {
-                res.json({
-                    msg: 'token已过期，请重新登陆',
-                    resultCode: '403'
-                });
-            } else {
-                next();
-            }
-        });
-    } else {
-        next();
+// app.use(function(req, res, next) {
+//     if (req.url != '/user/login' && req.url != "/user/register") {
+//         let body = req.body.token || req.query.token || req.headers.token;
+//         jwt.verify(token, secret, function(err, decode) {
+//             if (err) {
+//                 res.json({
+//                     msg: 'token已过期，请重新登陆',
+//                     resultCode: '403'
+//                 });
+//             } else {
+//                 next();
+//             }
+//         });
+//     } else {
+//         next();
+//     }
+// });
+
+router(app);
+
+app.listen('3111', (err) => {
+    if (err) {
+        console.log(err);
     }
-});
-
-app.use(router(app));
-
-app.listen('3000', () => {
-    console.log('server is running at 3000 port ...');
+    console.log('server is running at 3111 port ...');
 });
