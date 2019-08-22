@@ -4,7 +4,7 @@
   "description": "auth",
   "main": "app.js",
   "scripts": {
-    "start": "nodemon --watch app.js"
+    "start": "nodemon --watch src --watch app.js"
   },
   "repository": {
     "type": "git",

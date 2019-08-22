@@ -1,17 +1,25 @@
 const express = require('express');
 const bodyParser = require('body-parser');
 const jwt = require('jsonwebtoken');
+const auth = require('./src/middlewares/auth');
 const router = require('./src/router');
-const { secret } = require('./src/config/index');
-// 获取数据库连接对象
-const connection = require('./src/db/mysql');
+const mysql = require('mysql');
+const { dbConfig } = require('./src/config/index');
+// 创建数据库连接对象
+let connection = mysql.createConnection(dbConfig);
+// 连接数据库
+connection.connect();
 // 实力化app
 const app = express();
+// 挂载db
+app.mysqldb = connection;
+// 挂载jwt
+app.jwttoken = jwt;
 // 处理post body
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
 
-// 处理跨域
+// 处理跨域 也可以用cors库
 app.all("*", function(req, res, next) {
     res.header("Access-Control-Allow-Credentials", true);
     res.header("Access-Control-Allow-Origin", "*");
@@ -20,27 +28,11 @@ app.all("*", function(req, res, next) {
     res.header("Content-Type", "application/json;charset=utf-8");
     next();
 });
-
-// app.use(function(req, res, next) {
-//     if (req.url != '/user/login' && req.url != "/user/register") {
-//         let body = req.body.token || req.query.token || req.headers.token;
-//         jwt.verify(token, secret, function(err, decode) {
-//             if (err) {
-//                 res.json({
-//                     msg: 'token已过期，请重新登陆',
-//                     resultCode: '403'
-//                 });
-//             } else {
-//                 next();
-//             }
-//         });
-//     } else {
-//         next();
-//     }
-// });
-
+// token过期
+app.use(auth);
+// 路由
 router(app);
-
+// 启动
 app.listen('3111', (err) => {
     if (err) {
         console.log(err);

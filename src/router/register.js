@@ -1,7 +1,9 @@
+const RegisterController = require('../controller/register');
+
 function register(app) {
     app.post('/register', (req, res, next) => {
-        res.send('register');
-        next();
+        let registerController = new RegisterController(req, res, next, app);
+        registerController.register();
     });
 }
 
